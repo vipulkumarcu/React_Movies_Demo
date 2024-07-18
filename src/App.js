@@ -6,30 +6,12 @@ import './App.css';
 function App ()
 {
   const [ movies, setMovies ] = useState ( [] );
-  
-  // function fetchMoviesHandler ()
-  // {
-  //   fetch ( "https://swapi.dev/api/films" )
-  //     .then ( response => response.json() )
-  //       .then ( data => {
-  //           const transformedMovies = data.results.map (
-  //             ( movie ) => {
-  //               return {
-  //                 id: movie.episode_id,
-  //                 title: movie.title,
-  //                 openingText: movie.opening_crawl,
-  //                 releaseDate: movie.release_date
-  //               }
-  //             }
-  //           )
-
-  //           setMovies (transformedMovies);
-  //         } 
-  //       )
-  // }
+  const [ isLoading, setIsLoading ] = useState ( false );
 
   async function fetchMoviesHandler ()
   {
+    setIsLoading ( true );
+
     const response = await fetch ( "https://swapi.dev/api/films" );
 
     const data = await response.json ();
@@ -45,6 +27,8 @@ function App ()
       }
     );
 
+    setIsLoading ( false );
+    
     setMovies ( transformedMovies );
   }  
 
@@ -53,8 +37,11 @@ function App ()
       <section>
         <button onClick = { fetchMoviesHandler } > Fetch Movies </button>
       </section>
+
       <section>
-        <MoviesList movies = {movies} />
+      { !isLoading && movies.length > 0 && <MoviesList movies = { movies } /> }
+      { !isLoading && movies.length === 0 && <p> No Movies Found. Click Fetch !! </p> }
+      { isLoading && <p> Loading... </p> }
       </section>
     </React.Fragment>
   );
