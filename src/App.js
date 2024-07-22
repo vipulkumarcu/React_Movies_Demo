@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
 import MoviesList from './components/MoviesList';
+import AddMovie from "./components/AddMovie";
 import './App.css';
 
 function App ()
@@ -20,6 +21,8 @@ function App ()
       try
       {
         const response = await fetch ( "https://swapi.dev/api/films" );
+
+        // const response = await fetch ( "https://react-movies-demo-d927f-default-rtdb.firebaseio.com/movies.json" );
 
         if ( !response.ok )
         {
@@ -90,6 +93,11 @@ function App ()
     }, [ fetchMoviesHandler, intervalId ]
   );
 
+  function addMovieHandler ( movie )
+  {
+    console.log ( movie );
+  }
+
   let content = <p> No Movies Found. Click Fetch !! </p>;
 
   if ( movies.length > 0 )
@@ -109,6 +117,11 @@ function App ()
 
   return (
     <React.Fragment>
+      
+      <section>
+        <AddMovie onAddMovie = { addMovieHandler } />
+      </section>
+
       <section>
         <button onClick = { fetchMoviesHandler } > Fetch Movies </button>
       </section>
