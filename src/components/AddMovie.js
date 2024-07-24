@@ -12,13 +12,15 @@ function AddMovie  (props )
   {
     event.preventDefault();
 
-    // could add validation here...
-
     const movie = {
       title: titleRef.current.value,
       openingText: openingTextRef.current.value,
       releaseDate: releaseDateRef.current.value,
     };
+
+    titleRef.current.value = "";
+    openingTextRef.current.value = "";
+    releaseDateRef.current.value = "";
 
     props.onAddMovie ( movie );
   }
@@ -41,7 +43,7 @@ function AddMovie  (props )
         <input type = 'text' id = 'date' ref = { releaseDateRef } />
       </div>
 
-      <button >Add Movie </button>
+      <button> Add Movie </button>
 
     </form>
   );

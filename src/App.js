@@ -20,9 +20,9 @@ function App ()
 
       try
       {
-        const response = await fetch ( "https://swapi.dev/api/films" );
+        // const response = await fetch ( "https://swapi.dev/api/films" );
 
-        // const response = await fetch ( "https://react-movies-demo-d927f-default-rtdb.firebaseio.com/movies.json" );
+        const response = await fetch ( "https://react-movies-demo-d927f-default-rtdb.firebaseio.com/movies.json" );
 
         if ( !response.ok )
         {
@@ -31,18 +31,32 @@ function App ()
 
         const data = await response.json ();
 
-        const transformedMovies = data.results.map (
-          ( movie ) => {
-            return {
-              id: movie.episode_id,
-              title: movie.title,
-              openingText: movie.opening_crawl,
-              releaseDate: movie.release_date,
-            };
-          }
-        );
+        const loadedMovies = [];
 
-        setMovies ( transformedMovies );
+        for ( const key in data )
+        {
+          loadedMovies.push (
+            {
+              id: key,
+              title: data[key].title,
+              openingText: data[key].openingText,
+              releaseDate: data[key].releaseDate,
+            }
+          )
+        }
+
+        // const transformedMovies = data.results.map (
+        //   ( movie ) => {
+        //     return {
+        //       id: movie.episode_id,
+        //       title: movie.title,
+        //       openingText: movie.opening_crawl,
+        //       releaseDate: movie.release_date,
+        //     };
+        //   }
+        // );
+
+        setMovies ( loadedMovies );
 
         setRetrying ( false );
 
@@ -93,16 +107,45 @@ function App ()
     }, [ fetchMoviesHandler, intervalId ]
   );
 
-  function addMovieHandler ( movie )
+  async function addMovieHandler ( movie )
   {
-    console.log ( movie );
+    const response = await fetch ( "https://react-movies-demo-d927f-default-rtdb.firebaseio.com/movies.json",
+      {
+        method: "POST",
+        body: JSON.stringify ( movie ),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      }
+    );
+
+    const data = await response.json ();
+    fetchMoviesHandler ();
+    console.log ( data );
   }
+
+  async function deleteMovieHandler ( id )
+  {
+    const response = await fetch ( `https://react-movies-demo-d927f-default-rtdb.firebaseio.com/movies/${id}.json`,
+      {
+        method: 'DELETE',
+      }
+    );
+
+    if ( !response.ok )
+    {
+      throw new Error ( 'Could not delete movie.' );
+    }
+
+    setMovies ( ( prevMovies ) => prevMovies.filter ( ( movie ) => movie.id !== id ) );
+    fetchMoviesHandler ();
+  };
 
   let content = <p> No Movies Found. Click Fetch !! </p>;
 
   if ( movies.length > 0 )
   {
-    content = <MoviesList movies = { movies } />
+    content = <MoviesList movies = { movies } onDelete = { deleteMovieHandler } />
   }
 
   if ( error )
