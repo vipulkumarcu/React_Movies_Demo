@@ -119,9 +119,15 @@ function App ()
       }
     );
 
-    const data = await response.json ();
-    fetchMoviesHandler ();
-    console.log ( data );
+    if ( response.ok )
+    {
+      fetchMoviesHandler ();
+    }
+    
+    else
+    {
+      throw new Error ( 'Failed to add movie' );
+    }
   }
 
   async function deleteMovieHandler ( id )
@@ -138,7 +144,16 @@ function App ()
     }
 
     setMovies ( ( prevMovies ) => prevMovies.filter ( ( movie ) => movie.id !== id ) );
-    fetchMoviesHandler ();
+
+    if ( response.ok )
+    {
+      fetchMoviesHandler ();
+    }
+    
+    else
+    {
+      throw new Error ( 'Failed to delete movie' );
+    }
   };
 
   let content = <p> No Movies Found. Click Fetch !! </p>;
